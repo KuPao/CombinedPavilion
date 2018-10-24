@@ -1,6 +1,6 @@
-﻿Shader "Tessellation/Clip Tessellation" {
+﻿Shader "Tessellation/Clip" {
         Properties {
-            _Tess ("Tessellation", Range(1,32)) = 4
+            _Tess ("Tessellation", Range(1,32)) = 1
             _maxDist ("Tess Fade Distance", Range(0, 500.0)) = 25.0
             _MainTex ("Base (RGB)", 2D) = "white" {}
             _MOS ("Metallic (R), Occlussion (G), Smoothness (B)", 2D) = "white" {}
@@ -17,7 +17,7 @@
             LOD 300
             
             CGPROGRAM
-            #pragma surface surf Standard addshadow fullforwardshadows vertex:disp tessellate:tessDistance
+            #pragma surface surf Standard addshadow fullforwardshadows
             #pragma target 5.0
             #include "Tessellation.cginc"
 
@@ -33,10 +33,10 @@
             float _Tess;
             float _maxDist;
 
-            float4 tessDistance (appdata v0, appdata v1, appdata v2) 
-            {
-                return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, _maxDist * 0.2f, _maxDist * 1.2f, _Tess);
-            }
+            // float4 tessDistance (appdata v0, appdata v1, appdata v2) 
+            // {
+            //     return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, _maxDist * 0.2f, _maxDist * 1.2f, _Tess);
+            // }
 
             sampler2D _DispTex;
             sampler2D _MOS;
@@ -44,13 +44,13 @@
             float _Displacement;
             float _DispOffset;
 
-            void disp (inout appdata v)
-            {
-           		const float fadeOut= saturate((_maxDist - distance(mul(unity_ObjectToWorld, v.vertex), _WorldSpaceCameraPos)) / (_maxDist * 0.7f));
-                float d = tex2Dlod(_DispTex, float4(v.texcoord.xy * _DispTex_ST.xy + _DispTex_ST.zw,0,0)).r * _Displacement;
-                d = d * 0.5 - 0.5 +_DispOffset;
-                v.vertex.xyz += v.normal * d * fadeOut;
-            }
+            // void disp (inout appdata v)
+            // {
+           	// 	const float fadeOut= saturate((_maxDist - distance(mul(unity_ObjectToWorld, v.vertex), _WorldSpaceCameraPos)) / (_maxDist * 0.7f));
+            //     float d = tex2Dlod(_DispTex, float4(v.texcoord.xy * _DispTex_ST.xy + _DispTex_ST.zw,0,0)).r * _Displacement;
+            //     d = d * 0.5 - 0.5 +_DispOffset;
+            //     v.vertex.xyz += v.normal * d * fadeOut;
+            // }
 
             struct Input {
                 float2 uv_MainTex;

@@ -200,7 +200,7 @@
      <None Include="Assets\PlugIn\Stylized Nature Pack\Demo Scene\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
      <None Include="Assets\PlugIn\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
      <None Include="Assets\PlugIn\PostProcessing\Editor Resources\Monitors\VectorscopeCompute.compute" />
-     <None Include="Assets\Scripts\ClipShader.shader" />
+     <None Include="Assets\PlugIn\DX11_Tessellation\DX11_Tessellation_Free\Shaders\ClipShader.shader" />
      <None Include="Assets\PlugIn\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\PlugIn\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\PlugIn\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
@@ -223,6 +223,7 @@
      <None Include="Assets\PlugIn\PostProcessing\Editor Resources\UI\Trackball.shader" />
      <None Include="Assets\PlugIn\DX11_Tessellation\DX11_Tessellation_Free\Shaders\ClipAndTessellateOpposite.shader" />
      <None Include="Assets\PlugIn\Stylized Nature Pack\Demo Scene\Standard Assets\Effects\ImageEffects\Shaders\ChromaticAberrationShader.shader" />
+     <None Include="Assets\PlugIn\DX11_Tessellation\DX11_Tessellation_Free\Shaders\ClipShaderOpposite.shader" />
      <None Include="Assets\PlugIn\Stylized Nature Pack\Demo Scene\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
      <None Include="Assets\PlugIn\Stylized Nature Pack\Demo Scene\Standard Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
      <None Include="Assets\PlugIn\Stylized Nature Pack\Demo Scene\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Luminance.shader" />

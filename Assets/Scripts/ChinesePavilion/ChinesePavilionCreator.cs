@@ -989,6 +989,7 @@ public class ChinesePavilionCreator : MonoBehaviour
             rend.material.shader = shader;
             rend = sideRoofs[2].GetComponent<MeshRenderer>();
             rend.material.shader = shader;
+            shader = Shader.Find("Tessellation/Clip");
             rend = sideRoofs[9].GetComponent<MeshRenderer>();
             rend.material.shader = shader;
             rend = sideRoofs[10].GetComponent<MeshRenderer>();
@@ -998,11 +999,13 @@ public class ChinesePavilionCreator : MonoBehaviour
             rend.material.shader = shader;
             rend = sideRoofs[7].GetComponent<MeshRenderer>();
             rend.material.shader = shader;
+            shader = Shader.Find("Tessellation/Clip Opposite");
             rend = sideRoofs[12].GetComponent<MeshRenderer>();
             rend.material.shader = shader;
             rend = sideRoofs[15].GetComponent<MeshRenderer>();
             rend.material.shader = shader;
-            //sideRoofs[2].name = sideRoofs[3].name = "sideRoofInside";
+            sideRoofs[8].name = sideRoofs[9].name = sideRoofs[10].name = sideRoofs[11].name = "sideRoofInside";
+            sideRoofs[12].name = sideRoofs[13].name = sideRoofs[14].name = sideRoofs[15].name = "sideRoofInside";
         }
         #endregion
     }
