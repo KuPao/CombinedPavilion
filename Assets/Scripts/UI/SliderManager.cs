@@ -196,6 +196,12 @@ public class SliderManager : MonoBehaviour
         roof.wingAngleLength = value;
         chBuildManager.CreateBuilding();
     }
+    public void DisBetweenChange(float value)
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.disBetween = value;
+        chBuildManager.CreateBuilding();
+    }
     public void ColumnPosChange(float value)
     {
         Body body = chBuildManager.GetCurrentBody();
@@ -247,5 +253,19 @@ public class SliderManager : MonoBehaviour
             float flyingRafterHeight = circleCurve[Mathf.CeilToInt(bargeboardPercent)].y;
             sideEaveHeight.maxValue = flyingRafterHeight * 0.5f;
         }
+    }
+
+    public void SetRoofFangSheng()
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.combineType = 1;
+        chBuildManager.CreateBuilding();
+    }
+
+    public void SetRoofDoubldeHexa()
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.combineType = 2;
+        chBuildManager.CreateBuilding();
     }
 }

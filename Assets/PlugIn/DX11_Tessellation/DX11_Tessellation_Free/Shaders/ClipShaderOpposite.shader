@@ -33,24 +33,11 @@
             float _Tess;
             float _maxDist;
 
-            // float4 tessDistance (appdata v0, appdata v1, appdata v2) 
-            // {
-            //     return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, _maxDist * 0.2f, _maxDist * 1.2f, _Tess);
-            // }
-
             sampler2D _DispTex;
             sampler2D _MOS;
             uniform float4 _DispTex_ST;
             float _Displacement;
             float _DispOffset;
-
-            // void disp (inout appdata v)
-            // {
-           	// 	const float fadeOut= saturate((_maxDist - distance(mul(unity_ObjectToWorld, v.vertex), _WorldSpaceCameraPos)) / (_maxDist * 0.7f));
-            //     float d = tex2Dlod(_DispTex, float4(v.texcoord.xy * _DispTex_ST.xy + _DispTex_ST.zw,0,0)).r * _Displacement;
-            //     d = d * 0.5 - 0.5 +_DispOffset;
-            //     v.vertex.xyz += v.normal * d * fadeOut;
-            // }
 
             struct Input {
                 float2 uv_MainTex;

@@ -47,7 +47,7 @@ public class ChBuildManager : MonoBehaviour
         // assign為備用
         currentBuilding = creator.CreateRoof(roof);
         creator.CreateBody(body);
-        //creator.CreatePlatform(platform);
+        creator.CreatePlatform(platform);
 
     }
 }
