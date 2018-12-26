@@ -6,9 +6,9 @@ public class Body
 {
     public float pos;
     public float height;
+	public float secondFloorHeight;
     //diameter actually
     public float radius;
     public int xColumnCount;
     public int zColumnCount;
-    public int combineType = 1;
 }

@@ -18,6 +18,8 @@ public class Roof
     public float wingAngleCurve;
     public float wingAngleLength;
     public float wingAngleHeight;
-	public float disBetween = 3.0f;
-    public int combineType = 2;
+	public float disBetween;
+	public float baoShaWidth;
+	public float baoShaHeight;
+    public int combineType = 3;
 }

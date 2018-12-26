@@ -21,10 +21,14 @@ public class SliderManager : MonoBehaviour
     public Slider WingAngleHeight;
     public Slider wingAngleLength;
     public Slider wingAngleCurve;
+    public Slider disBetween;
+    public Slider baoShaWidth;
+    public Slider baoShaHeight;
     [Header("Column")]
     public Slider columnPos;
     public Slider columnRadius;
     public Slider columnHeight;
+    public Slider SecondFloorHeight;
     [Header("PlatForm")]
     public Slider platformLength;
     public Slider platformWidth;
@@ -56,6 +60,9 @@ public class SliderManager : MonoBehaviour
         roof.wingAngleHeight = WingAngleHeight.value;
         roof.wingAngleLength = wingAngleLength.value;
         roof.wingAngleCurve = wingAngleCurve.value;
+        roof.disBetween = disBetween.value;
+        roof.baoShaWidth = baoShaWidth.value;
+        roof.baoShaHeight = baoShaHeight.value;
 
         return roof;
     }
@@ -66,6 +73,7 @@ public class SliderManager : MonoBehaviour
         body.pos = columnPos.value;
         body.height = columnHeight.value;
         body.radius = columnRadius.value;
+        body.secondFloorHeight = SecondFloorHeight.value;
         return body;
     }
     public Platform SetAllVlaueFromPlatformSlider(Platform platform)
@@ -99,6 +107,10 @@ public class SliderManager : MonoBehaviour
     {
         //關係連動
         SetRoofHeight();
+        baoShaWidth.maxValue = value / 2 - 0.1f;
+        baoShaWidth.minValue = baoShaWidth.maxValue / 2;
+        length.maxValue = (value - baoShaWidth.value) * 2 - 0.1f;
+        length.minValue = (value - baoShaWidth.value) / 2 - 0.1f;
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.width = value;
         chBuildManager.CreateBuilding();
@@ -202,6 +214,20 @@ public class SliderManager : MonoBehaviour
         roof.disBetween = value;
         chBuildManager.CreateBuilding();
     }
+    public void BaoShaWidthChange(float value)
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        length.maxValue = (width.value - value) * 2 - 0.1f;
+        length.minValue = (width.value - value) / 2 - 0.1f;
+        roof.baoShaWidth = value;
+        chBuildManager.CreateBuilding();
+    }
+    public void BaoShaHeightChange(float value)
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.baoShaHeight = value;
+        chBuildManager.CreateBuilding();
+    }
     public void ColumnPosChange(float value)
     {
         Body body = chBuildManager.GetCurrentBody();
@@ -218,6 +244,14 @@ public class SliderManager : MonoBehaviour
     {
         Body body = chBuildManager.GetCurrentBody();
         body.height = value;
+        chBuildManager.CreateBuilding();
+    }
+    public void SecondFloorHeightChange(float value)
+    {
+        Body body = chBuildManager.GetCurrentBody();
+        baoShaHeight.maxValue = value / 2 + 0.1f;
+        baoShaHeight.minValue = value / 4 + 0.1f;
+        body.secondFloorHeight = value;
         chBuildManager.CreateBuilding();
     }
     public void PlatformLengthChange(float value)
@@ -255,10 +289,40 @@ public class SliderManager : MonoBehaviour
         }
     }
 
+    public void SetRoofSingle()
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.combineType = 0;
+        disBetween.transform.parent.gameObject.SetActive(false);
+        length.transform.parent.gameObject.SetActive(true);
+        deep.transform.parent.gameObject.SetActive(true);
+        sideEaveStart.transform.parent.gameObject.SetActive(true);
+        wingAngleLength.transform.parent.gameObject.SetActive(true);
+        WingAngleHeight.transform.parent.gameObject.SetActive(true);
+        topLowerHeight.transform.parent.gameObject.SetActive(true);
+        topLowerLength.transform.parent.gameObject.SetActive(true);
+        topLowerCurve.transform.parent.gameObject.SetActive(true);
+        baoShaWidth.transform.parent.gameObject.SetActive(false);
+        baoShaHeight.transform.parent.gameObject.SetActive(false);
+        chBuildManager.CreateBuilding();
+    }
+
     public void SetRoofFangSheng()
     {
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 1;
+        roof.length = 0;
+        disBetween.transform.parent.gameObject.SetActive(true);
+        length.transform.parent.gameObject.SetActive(false);
+        deep.transform.parent.gameObject.SetActive(false);
+        sideEaveStart.transform.parent.gameObject.SetActive(false);
+        wingAngleLength.transform.parent.gameObject.SetActive(false);
+        WingAngleHeight.transform.parent.gameObject.SetActive(false);
+        topLowerHeight.transform.parent.gameObject.SetActive(false);
+        topLowerLength.transform.parent.gameObject.SetActive(false);
+        topLowerCurve.transform.parent.gameObject.SetActive(false);
+        baoShaWidth.transform.parent.gameObject.SetActive(false);
+        baoShaHeight.transform.parent.gameObject.SetActive(false);
         chBuildManager.CreateBuilding();
     }
 
@@ -266,6 +330,56 @@ public class SliderManager : MonoBehaviour
     {
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 2;
+        roof.length = 0;
+        disBetween.transform.parent.gameObject.SetActive(true);
+        length.transform.parent.gameObject.SetActive(false);
+        deep.transform.parent.gameObject.SetActive(false);
+        sideEaveStart.transform.parent.gameObject.SetActive(false);
+        wingAngleLength.transform.parent.gameObject.SetActive(false);
+        WingAngleHeight.transform.parent.gameObject.SetActive(false);
+        topLowerHeight.transform.parent.gameObject.SetActive(false);
+        topLowerLength.transform.parent.gameObject.SetActive(false);
+        topLowerCurve.transform.parent.gameObject.SetActive(false);
+        baoShaWidth.transform.parent.gameObject.SetActive(false);
+        baoShaHeight.transform.parent.gameObject.SetActive(false);
+        chBuildManager.CreateBuilding();
+    }
+
+    public void SetRoofDoubldeOcto()
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.combineType = 3;
+        roof.length = 0;
+        disBetween.transform.parent.gameObject.SetActive(true);
+        length.transform.parent.gameObject.SetActive(false);
+        deep.transform.parent.gameObject.SetActive(false);
+        sideEaveStart.transform.parent.gameObject.SetActive(false);
+        wingAngleLength.transform.parent.gameObject.SetActive(false);
+        WingAngleHeight.transform.parent.gameObject.SetActive(false);
+        topLowerHeight.transform.parent.gameObject.SetActive(false);
+        topLowerLength.transform.parent.gameObject.SetActive(false);
+        topLowerCurve.transform.parent.gameObject.SetActive(false);
+        baoShaWidth.transform.parent.gameObject.SetActive(false);
+        baoShaHeight.transform.parent.gameObject.SetActive(false);
+        chBuildManager.CreateBuilding();
+    }
+
+    public void SetRoofCross()
+    {
+        Roof roof = chBuildManager.GetCurrentRoof();
+        roof.combineType = 4;
+        roof.length = length.value;
+        disBetween.transform.parent.gameObject.SetActive(false);
+        length.transform.parent.gameObject.SetActive(true);
+        deep.transform.parent.gameObject.SetActive(false);
+        sideEaveStart.transform.parent.gameObject.SetActive(false);
+        wingAngleLength.transform.parent.gameObject.SetActive(false);
+        WingAngleHeight.transform.parent.gameObject.SetActive(false);
+        topLowerHeight.transform.parent.gameObject.SetActive(false);
+        topLowerLength.transform.parent.gameObject.SetActive(false);
+        topLowerCurve.transform.parent.gameObject.SetActive(false);
+        baoShaWidth.transform.parent.gameObject.SetActive(true);
+        baoShaHeight.transform.parent.gameObject.SetActive(true);
         chBuildManager.CreateBuilding();
     }
 }

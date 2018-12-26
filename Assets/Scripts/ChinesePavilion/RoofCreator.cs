@@ -277,6 +277,79 @@ public class RoofCreator : MonoBehaviour
         mesh.uv = uvs.ToArray();
         mesh.RecalculateNormals();
 
+        #region tangents
+        //speed up math by copying the mesh arrays
+        Vector2[] uv = mesh.uv;
+        Vector3[] normals = mesh.normals;
+
+        //variable definitions
+        int triangleCount = triangles.ToArray().Length;
+        int vertexCount = vertices.ToArray().Length;
+
+        Vector3[] tan1 = new Vector3[vertexCount];
+        Vector3[] tan2 = new Vector3[vertexCount];
+
+        Vector4[] tangents = new Vector4[vertexCount];
+
+        for (int a = 0; a < triangleCount; a += 3)
+        {
+            int i1 = triangles[a + 0];
+            int i2 = triangles[a + 1];
+            int i3 = triangles[a + 2];
+
+            Vector3 v1 = vertices[i1];
+            Vector3 v2 = vertices[i2];
+            Vector3 v3 = vertices[i3];
+
+            Vector2 w1 = uv[i1];
+            Vector2 w2 = uv[i2];
+            Vector2 w3 = uv[i3];
+
+            float x1 = v2.x - v1.x;
+            float x2 = v3.x - v1.x;
+            float y1 = v2.y - v1.y;
+            float y2 = v3.y - v1.y;
+            float z1 = v2.z - v1.z;
+            float z2 = v3.z - v1.z;
+
+            float s1 = w2.x - w1.x;
+            float s2 = w3.x - w1.x;
+            float t1 = w2.y - w1.y;
+            float t2 = w3.y - w1.y;
+
+            float r = 1.0f / (s1 * t2 - s2 * t1);
+
+            Vector3 sdir = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+            Vector3 tdir = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+
+            tan1[i1] += sdir;
+            tan1[i2] += sdir;
+            tan1[i3] += sdir;
+
+            tan2[i1] += tdir;
+            tan2[i2] += tdir;
+            tan2[i3] += tdir;
+        }    
+
+
+        for (long a = 0; a < vertexCount; ++a)
+        {
+            Vector3 n = normals[a];
+            Vector3 t = tan1[a];
+
+            //Vector3 tmp = (t - n * Vector3.Dot(n, t)).normalized;
+            //tangents[a] = new Vector4(tmp.x, tmp.y, tmp.z);
+            Vector3.OrthoNormalize(ref n, ref t);
+            tangents[a].x = t.x;
+            tangents[a].y = t.y;
+            tangents[a].z = t.z;
+
+            tangents[a].w = (Vector3.Dot(Vector3.Cross(n, t), tan2[a]) < 0.0f) ? -1.0f : 1.0f;
+        }
+
+        mesh.tangents = tangents;
+        #endregion
+
         roofObj.GetComponent<MeshFilter>().mesh = mesh;
         return roofObj;
     }
@@ -296,249 +369,249 @@ public class RoofCreator : MonoBehaviour
         return obj;
     }
 
-    public GameObject CreateCombinedEaves(List<Vector3> flyingRafterPoints, List<Vector3> bargeboardPoints, List<Vector3> topRoofPoints, float length, Roof roof, bool reverse)
-    {
-        int flyingBargePointNum = flyingRafterPoints.Count - 1;
+    // public GameObject CreateCombinedEaves(List<Vector3> flyingRafterPoints, List<Vector3> bargeboardPoints, List<Vector3> topRoofPoints, float length, Roof roof, bool reverse)
+    // {
+    //     int flyingBargePointNum = flyingRafterPoints.Count - 1;
 
-        GameObject roofObj = new GameObject();
-        //加入mesh
-        Mesh mesh;
-        if (!reverse)
-        {
-            mesh = AddMeshRenderer(roofObj, roofMaterial);
-        }
-        else
-        {
-            mesh = AddMeshRenderer(roofObj, insideRoofMaterial);
-        }
-        //生成mesh
-        MeshRoof meshRoof = new MeshRoof();
+    //     GameObject roofObj = new GameObject();
+    //     //加入mesh
+    //     Mesh mesh;
+    //     if (!reverse)
+    //     {
+    //         mesh = AddMeshRenderer(roofObj, roofMaterial);
+    //     }
+    //     else
+    //     {
+    //         mesh = AddMeshRenderer(roofObj, insideRoofMaterial);
+    //     }
+    //     //生成mesh
+    //     MeshRoof meshRoof = new MeshRoof();
 
-        //節點
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        List<Vector2> uvs = new List<Vector2>();
+    //     //節點
+    //     List<Vector3> vertices = new List<Vector3>();
+    //     List<int> triangles = new List<int>();
+    //     List<Vector2> uvs = new List<Vector2>();
 
-        #region Vertices
-        // 飛簷的最大位置
-        int frMax = flyingRafterPoints.Count - 1;
-        //左側翼角的點
-        int rightPartPointsCount = 0;
-        int centerPartPointsCount = 0;
-        int leftPartPointsCount = 0;
-        List<Vector3> wingAngleCurve = new List<Vector3>();
-        //如果有翼角的話
-        if (frMax >= 0)
-        {
-            CircleCurve circleCurve = new CircleCurve();
-            wingAngleCurve = circleCurve.CreateCircleCurve(0, (flyingRafterPoints[frMax]).x, roof.wingAngleCurve, frMax);
-            roofTileCurve = wingAngleCurve;
+    //     #region Vertices
+    //     // 飛簷的最大位置
+    //     int frMax = flyingRafterPoints.Count - 1;
+    //     //左側翼角的點
+    //     int rightPartPointsCount = 0;
+    //     int centerPartPointsCount = 0;
+    //     int leftPartPointsCount = 0;
+    //     List<Vector3> wingAngleCurve = new List<Vector3>();
+    //     //如果有翼角的話
+    //     if (frMax >= 0)
+    //     {
+    //         CircleCurve circleCurve = new CircleCurve();
+    //         wingAngleCurve = circleCurve.CreateCircleCurve(0, (flyingRafterPoints[frMax]).x, roof.wingAngleCurve, frMax);
+    //         roofTileCurve = wingAngleCurve;
 
-            // 算右側的翼角的 vertices
-            for (int i = frMax; i >= 1; i--)
-            {
-                Vector3 newPoint = flyingRafterPoints[i];
-                newPoint.x = -(newPoint.x + length / 2);
-                vertices.Add(newPoint);
+    //         // 算右側的翼角的 vertices
+    //         for (int i = frMax; i >= 1; i--)
+    //         {
+    //             Vector3 newPoint = flyingRafterPoints[i];
+    //             newPoint.x = -(newPoint.x + length / 2);
+    //             vertices.Add(newPoint);
 
-                float jStart = bargeboardPoints.Count - (frMax - i);
-                for (int j = (int)jStart; j < bargeboardPoints.Count; j++)
-                {
-                    //算內插 數學!
-                    int a = j - bargeboardPoints.Count + flyingRafterPoints.Count;
-                    int b = i;
-                    newPoint = (bargeboardPoints[j] * ((float)(a - b) / a)) + (flyingRafterPoints[a] * ((float)b / a));
-                    newPoint.x = -(newPoint.x + length / 2);
-                    float yOffset = ((j - jStart + 1) / (bargeboardPoints.Count - jStart));
-                    newPoint.y = newPoint.y + wingAngleCurve[i].y * yOffset;
-                    //newPoint.z = bargeboardPoints[j].z;
-                    vertices.Add(newPoint);
-                }
-            }
-            rightPartPointsCount = vertices.Count;
-        }
-        if (length >= 0.01f)
-        {
-            for (int x = 0; x < topRoofPoints.Count; x++)
-            {
-                for (int y = 0; y < bargeboardPoints.Count; y++)
-                {
-                    float heightDif =
-                        (float)(topRoofPoints[0].y - topRoofPoints[x].y) * ((float)(bargeboardPoints.Count - y) / bargeboardPoints.Count);
-                    Vector3 newPoint = new Vector3(topRoofPoints[x].x, bargeboardPoints[y].y - heightDif, bargeboardPoints[y].z);
-                    vertices.Add(newPoint);
-                }
-            }
-        }
-        else
-        {
-            for (int y = 0; y < bargeboardPoints.Count; y++)
-            {
-                vertices.Add(bargeboardPoints[y]);
-            }
-        }
-        //  算中間的面的 vertices
-        centerPartPointsCount = vertices.Count;
+    //             float jStart = bargeboardPoints.Count - (frMax - i);
+    //             for (int j = (int)jStart; j < bargeboardPoints.Count; j++)
+    //             {
+    //                 //算內插 數學!
+    //                 int a = j - bargeboardPoints.Count + flyingRafterPoints.Count;
+    //                 int b = i;
+    //                 newPoint = (bargeboardPoints[j] * ((float)(a - b) / a)) + (flyingRafterPoints[a] * ((float)b / a));
+    //                 newPoint.x = -(newPoint.x + length / 2);
+    //                 float yOffset = ((j - jStart + 1) / (bargeboardPoints.Count - jStart));
+    //                 newPoint.y = newPoint.y + wingAngleCurve[i].y * yOffset;
+    //                 //newPoint.z = bargeboardPoints[j].z;
+    //                 vertices.Add(newPoint);
+    //             }
+    //         }
+    //         rightPartPointsCount = vertices.Count;
+    //     }
+    //     if (length >= 0.01f)
+    //     {
+    //         for (int x = 0; x < topRoofPoints.Count; x++)
+    //         {
+    //             for (int y = 0; y < bargeboardPoints.Count; y++)
+    //             {
+    //                 float heightDif =
+    //                     (float)(topRoofPoints[0].y - topRoofPoints[x].y) * ((float)(bargeboardPoints.Count - y) / bargeboardPoints.Count);
+    //                 Vector3 newPoint = new Vector3(topRoofPoints[x].x, bargeboardPoints[y].y - heightDif, bargeboardPoints[y].z);
+    //                 vertices.Add(newPoint);
+    //             }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         for (int y = 0; y < bargeboardPoints.Count; y++)
+    //         {
+    //             vertices.Add(bargeboardPoints[y]);
+    //         }
+    //     }
+    //     //  算中間的面的 vertices
+    //     centerPartPointsCount = vertices.Count;
 
-        //如果有翼角的話
-        if (frMax >= 0)
-        {
-            // 算左側的翼角的 vertices
-            for (int i = 1; i < frMax + 1; i++)
-            {
-                Vector3 newPoint = flyingRafterPoints[i];
-                newPoint.x = (newPoint.x + length / 2);
-                vertices.Add(newPoint);
+    //     //如果有翼角的話
+    //     if (frMax >= 0)
+    //     {
+    //         // 算左側的翼角的 vertices
+    //         for (int i = 1; i < frMax + 1; i++)
+    //         {
+    //             Vector3 newPoint = flyingRafterPoints[i];
+    //             newPoint.x = (newPoint.x + length / 2);
+    //             vertices.Add(newPoint);
 
-                float jStart = bargeboardPoints.Count - (frMax - i);
-                for (int j = (int)jStart; j < bargeboardPoints.Count; j++)
-                {
-                    //算內插 數學!
-                    int a = j - bargeboardPoints.Count + flyingRafterPoints.Count;
-                    int b = i;
-                    newPoint = (bargeboardPoints[j] * ((float)(a - b) / a)) + (flyingRafterPoints[a] * ((float)b / a));
-                    newPoint.x = (newPoint.x + length / 2);
-                    float yOffset = ((j - jStart + 1) / (bargeboardPoints.Count - jStart));
-                    newPoint.y = newPoint.y + wingAngleCurve[i].y * yOffset;
-                    // newPoint.y = newPoint.y + wingAngleCurve[i].y * (float)b / a;
-                    vertices.Add(newPoint);
-                }
-            }
-            leftPartPointsCount = vertices.Count;
-        }
-        // Debug.Log(rightPartPointsCount);
-        #endregion
+    //             float jStart = bargeboardPoints.Count - (frMax - i);
+    //             for (int j = (int)jStart; j < bargeboardPoints.Count; j++)
+    //             {
+    //                 //算內插 數學!
+    //                 int a = j - bargeboardPoints.Count + flyingRafterPoints.Count;
+    //                 int b = i;
+    //                 newPoint = (bargeboardPoints[j] * ((float)(a - b) / a)) + (flyingRafterPoints[a] * ((float)b / a));
+    //                 newPoint.x = (newPoint.x + length / 2);
+    //                 float yOffset = ((j - jStart + 1) / (bargeboardPoints.Count - jStart));
+    //                 newPoint.y = newPoint.y + wingAngleCurve[i].y * yOffset;
+    //                 // newPoint.y = newPoint.y + wingAngleCurve[i].y * (float)b / a;
+    //                 vertices.Add(newPoint);
+    //             }
+    //         }
+    //         leftPartPointsCount = vertices.Count;
+    //     }
+    //     // Debug.Log(rightPartPointsCount);
+    //     #endregion
 
-        #region Triangles
-        // 計算右邊部分的面
-        for (int i = 0, counter = 0; i < flyingRafterPoints.Count - 1; i++)
-        {
-            for (int j = 0; j < i + 1; j++)
-            {
-                int a = counter >= rightPartPointsCount ? counter + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter;
-                int b = counter + (i + 2) >= rightPartPointsCount ? counter + (i + 2) + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter + (i + 2);
-                int c = counter + (i + 1) >= rightPartPointsCount ? counter + (i + 1) + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter + (i + 1);
-                if (!reverse)
-                {
-                    triangles.Add(a);
-                    triangles.Add(b);
-                    triangles.Add(c);
-                    if (j != i)
-                    {
-                        triangles.Add(b);
-                        triangles.Add(a);
-                        triangles.Add(a + 1);
-                    }
-                }
-                else
-                {
-                    triangles.Add(a);
-                    triangles.Add(c);
-                    triangles.Add(b);
-                    if (j != i)
-                    {
-                        triangles.Add(b);
-                        triangles.Add(a + 1);
-                        triangles.Add(a);
-                    }
-                }
-                counter++;
-            }
-        }
-        if (length >= 0.01f)
-        {
-            // 計算中間部分的面
-            for (int x = 0; x < topRoofPoints.Count - 1; x++)
-            {
-                for (int y = rightPartPointsCount; y < bargeboardPoints.Count - 1 + rightPartPointsCount; y++)
-                {
-                    if (!reverse)
-                    {
-                        triangles.Add(x * bargeboardPoints.Count + y);
-                        triangles.Add(x * bargeboardPoints.Count + y + 1);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y);
+    //     #region Triangles
+    //     // 計算右邊部分的面
+    //     for (int i = 0, counter = 0; i < flyingRafterPoints.Count - 1; i++)
+    //     {
+    //         for (int j = 0; j < i + 1; j++)
+    //         {
+    //             int a = counter >= rightPartPointsCount ? counter + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter;
+    //             int b = counter + (i + 2) >= rightPartPointsCount ? counter + (i + 2) + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter + (i + 2);
+    //             int c = counter + (i + 1) >= rightPartPointsCount ? counter + (i + 1) + (bargeboardPoints.Count - flyingBargePointNum - 1) : counter + (i + 1);
+    //             if (!reverse)
+    //             {
+    //                 triangles.Add(a);
+    //                 triangles.Add(b);
+    //                 triangles.Add(c);
+    //                 if (j != i)
+    //                 {
+    //                     triangles.Add(b);
+    //                     triangles.Add(a);
+    //                     triangles.Add(a + 1);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 triangles.Add(a);
+    //                 triangles.Add(c);
+    //                 triangles.Add(b);
+    //                 if (j != i)
+    //                 {
+    //                     triangles.Add(b);
+    //                     triangles.Add(a + 1);
+    //                     triangles.Add(a);
+    //                 }
+    //             }
+    //             counter++;
+    //         }
+    //     }
+    //     if (length >= 0.01f)
+    //     {
+    //         // 計算中間部分的面
+    //         for (int x = 0; x < topRoofPoints.Count - 1; x++)
+    //         {
+    //             for (int y = rightPartPointsCount; y < bargeboardPoints.Count - 1 + rightPartPointsCount; y++)
+    //             {
+    //                 if (!reverse)
+    //                 {
+    //                     triangles.Add(x * bargeboardPoints.Count + y);
+    //                     triangles.Add(x * bargeboardPoints.Count + y + 1);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y);
 
-                        triangles.Add(x * bargeboardPoints.Count + y + 1);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y + 1);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y);
-                    }
-                    else
-                    {
-                        triangles.Add(x * bargeboardPoints.Count + y);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y);
-                        triangles.Add(x * bargeboardPoints.Count + y + 1);
+    //                     triangles.Add(x * bargeboardPoints.Count + y + 1);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y + 1);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y);
+    //                 }
+    //                 else
+    //                 {
+    //                     triangles.Add(x * bargeboardPoints.Count + y);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y);
+    //                     triangles.Add(x * bargeboardPoints.Count + y + 1);
 
-                        triangles.Add(x * bargeboardPoints.Count + y + 1);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y);
-                        triangles.Add((x + 1) * bargeboardPoints.Count + y + 1);
-                    }
-                }
-            }
-        }
-        // 計算左邊部分的面
-        for (int i = 0, counter = 0; i < frMax; i++)
-        {
-            for (int j = i; j < frMax; j++)
-            {
-                int a = counter + centerPartPointsCount - (flyingRafterPoints.Count);
-                int b = a + 1;
-                int c = b + (frMax - i);
-                if (!reverse)
-                {
-                    triangles.Add(a);
-                    triangles.Add(b);
-                    triangles.Add(c);
-                    if (j != i)
-                    {
-                        triangles.Add(a);
-                        triangles.Add(c);
-                        triangles.Add(c - 1);
-                    }
-                }
-                else
-                {
-                    triangles.Add(a);
-                    triangles.Add(c);
-                    triangles.Add(b);
-                    if (j != i)
-                    {
-                        triangles.Add(a);
-                        triangles.Add(c - 1);
-                        triangles.Add(c);
-                    }
-                }
-                counter++;
-            }
-            counter++;
-        }
-        #endregion
+    //                     triangles.Add(x * bargeboardPoints.Count + y + 1);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y);
+    //                     triangles.Add((x + 1) * bargeboardPoints.Count + y + 1);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     // 計算左邊部分的面
+    //     for (int i = 0, counter = 0; i < frMax; i++)
+    //     {
+    //         for (int j = i; j < frMax; j++)
+    //         {
+    //             int a = counter + centerPartPointsCount - (flyingRafterPoints.Count);
+    //             int b = a + 1;
+    //             int c = b + (frMax - i);
+    //             if (!reverse)
+    //             {
+    //                 triangles.Add(a);
+    //                 triangles.Add(b);
+    //                 triangles.Add(c);
+    //                 if (j != i)
+    //                 {
+    //                     triangles.Add(a);
+    //                     triangles.Add(c);
+    //                     triangles.Add(c - 1);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 triangles.Add(a);
+    //                 triangles.Add(c);
+    //                 triangles.Add(b);
+    //                 if (j != i)
+    //                 {
+    //                     triangles.Add(a);
+    //                     triangles.Add(c - 1);
+    //                     triangles.Add(c);
+    //                 }
+    //             }
+    //             counter++;
+    //         }
+    //         counter++;
+    //     }
+    //     #endregion
 
-        #region UV
-        float widthDistance = UVScale;
-        float heighDistance = UVScale;
-        float offsetY;
-        if (frMax >= 0)
-            offsetY = bargeboardPoints[flyingBargePointNum].y / bargeboardPoints[bargeboardPoints.Count - 1].y * UVScale;
-        else
-            offsetY = 0;
+    //     #region UV
+    //     float widthDistance = UVScale;
+    //     float heighDistance = UVScale;
+    //     float offsetY;
+    //     if (frMax >= 0)
+    //         offsetY = bargeboardPoints[flyingBargePointNum].y / bargeboardPoints[bargeboardPoints.Count - 1].y * UVScale;
+    //     else
+    //         offsetY = 0;
 
-        CaculateUV(uvs, vertices, rightPartPointsCount, widthDistance, heighDistance);
-        for (int i = 0; i < uvs.Count; i++)
-        {
-            Vector2 newPoint = uvs[i];
-            newPoint.y = newPoint.y + offsetY;
-            uvs[i] = newPoint;
-        }
-        #endregion
+    //     CaculateUV(uvs, vertices, rightPartPointsCount, widthDistance, heighDistance);
+    //     for (int i = 0; i < uvs.Count; i++)
+    //     {
+    //         Vector2 newPoint = uvs[i];
+    //         newPoint.y = newPoint.y + offsetY;
+    //         uvs[i] = newPoint;
+    //     }
+    //     #endregion
 
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.uv = uvs.ToArray();
-        mesh.RecalculateNormals();
+    //     mesh.vertices = vertices.ToArray();
+    //     mesh.triangles = triangles.ToArray();
+    //     mesh.uv = uvs.ToArray();
+    //     mesh.RecalculateNormals();
 
-        roofObj.GetComponent<MeshFilter>().mesh = mesh;
-        return roofObj;
-    }
+    //     roofObj.GetComponent<MeshFilter>().mesh = mesh;
+    //     return roofObj;
+    // }
     
     /// <summary>
     /// 銅瓦與滴水

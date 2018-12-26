@@ -45,9 +45,9 @@ public class ChBuildManager : MonoBehaviour
         ChinesePavilionCreator creator = FindObjectOfType<ChinesePavilionCreator>();
         creator.CreateSetUp();
         // assign為備用
-        currentBuilding = creator.CreateRoof(roof);
-        creator.CreateBody(body);
-        creator.CreatePlatform(platform);
+        currentBuilding = creator.CreateRoof(roof, body);
+        // creator.CreateBody(body);
+        // creator.CreatePlatform(platform);
 
     }
 }
