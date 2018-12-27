@@ -1985,12 +1985,13 @@ public class ChinesePavilionCreator : MonoBehaviour
         ridges.Add(Instantiate(ridgeWidth));
         ridges.Add(Instantiate(ridgeWidth));
         ridges.Add(Instantiate(ridgeWidth));
-        ridges[0].transform.position = new Vector3(0, roof.baoShaHeight - roof.sideEaveHeight - 1.5f, -roof.width - roof.baoShaWidth / 2);
-        ridges[1].transform.position = new Vector3(roof.width + roof.baoShaWidth / 2, roof.baoShaHeight - roof.sideEaveHeight - 1.5f, 0);
+        // float baoShaFlyingRafterY = -roof.baoShaHeight + roof.topLowerHeight + roof.sideEaveHeight;
+        ridges[0].transform.position = new Vector3(0, 0, -roof.width - roof.baoShaWidth / 2);
+        ridges[1].transform.position = new Vector3(roof.width + roof.baoShaWidth / 2, 0, 0);
         ridges[1].transform.Rotate(new Vector3(0, 90, 0));
-        ridges[2].transform.position = new Vector3(0, roof.baoShaHeight - roof.sideEaveHeight - 1.5f, roof.width + roof.baoShaWidth / 2);
+        ridges[2].transform.position = new Vector3(0, 0, roof.width + roof.baoShaWidth / 2);
         ridges[2].transform.Rotate(new Vector3(0, 180, 0));
-        ridges[3].transform.position = new Vector3(-roof.width - roof.baoShaWidth / 2, roof.baoShaHeight - roof.sideEaveHeight - 1.5f, 0);
+        ridges[3].transform.position = new Vector3(-roof.width - roof.baoShaWidth / 2, 0, 0);
         ridges[3].transform.Rotate(new Vector3(0, 270, 0));
         
         //存到bargeboardPoints 畫mesh用
@@ -2027,6 +2028,21 @@ public class ChinesePavilionCreator : MonoBehaviour
                 float y = pos.y + -(roof.baoShaHeight - roof.topLowerHeight);
                 float newZ = -pos.x * Mathf.Sin(angle) + pos.z * Mathf.Cos(angle) + roof.baoShaWidth;
                 baoShaBargeboardPoints.Add(new Vector3(x, y, newZ));
+            }
+
+            curve = circleCurve.CreateCircleCurve(roof.height, roof.width, roof.curve, circleCurveRes * 2);
+            //倒過來
+            curve.Reverse();
+
+            //bargeboardPoints 畫mesh用
+            bargeboardPoints = new List<Vector3>();
+            angle = Mathf.PI / 2;
+            foreach (Vector3 pos in curve)
+            {
+                float x = pos.x * Mathf.Cos(angle) + pos.z * Mathf.Sin(angle);
+                float y = pos.y + -(roof.height - roof.topLowerHeight);
+                float newZ = -pos.x * Mathf.Sin(angle) + pos.z * Mathf.Cos(angle) + roof.width;
+                bargeboardPoints.Add(new Vector3(x, y, newZ));
             }
         }
         else
@@ -2676,6 +2692,7 @@ public class ChinesePavilionCreator : MonoBehaviour
             Instantiate(baoShaRafter)
         };
         float flyingRafterY = -(roof.height - roof.topLowerHeight) + roof.sideEaveHeight;
+        float baoShaFlyingRafterY = -roof.baoShaHeight + roof.sideEaveHeight;
         if (roof.deep < 0.01f)
             flyingRafterZ = curve[curve.Count - 1].x - curve[bargeboardPointUpper].x;
         else
@@ -2690,40 +2707,40 @@ public class ChinesePavilionCreator : MonoBehaviour
         flyingRafters[3].transform.position = new Vector3(0, flyingRafterY + body.secondFloorHeight, (flyingRafterZ + roof.deep / 2));
         flyingRafters[3].transform.Rotate(new Vector3(0, 45, 0));
 
-        flyingRafters[4].transform.position = new Vector3(roof.length / 2, flyingRafterY, flyingRafterZ - roof.width - roof.baoShaWidth / 2);
+        flyingRafters[4].transform.position = new Vector3(roof.length / 2, baoShaFlyingRafterY, flyingRafterZ - roof.width - roof.baoShaWidth / 2);
         flyingRafters[4].transform.Rotate(new Vector3(0, 135, 0));
-        flyingRafters[5].transform.position = new Vector3(roof.length / 2, flyingRafterY, -flyingRafterZ - roof.width - roof.baoShaWidth / 2);
+        flyingRafters[5].transform.position = new Vector3(roof.length / 2, baoShaFlyingRafterY, -flyingRafterZ - roof.width - roof.baoShaWidth / 2);
         flyingRafters[5].transform.Rotate(new Vector3(0, 225f, 0));
-        flyingRafters[6].transform.position = new Vector3(-roof.length / 2, flyingRafterY, -flyingRafterZ - roof.width - roof.baoShaWidth / 2);
+        flyingRafters[6].transform.position = new Vector3(-roof.length / 2, baoShaFlyingRafterY, -flyingRafterZ - roof.width - roof.baoShaWidth / 2);
         flyingRafters[6].transform.Rotate(new Vector3(0, 315, 0));
-        flyingRafters[7].transform.position = new Vector3(-roof.length / 2, flyingRafterY, flyingRafterZ - roof.width - roof.baoShaWidth / 2);
+        flyingRafters[7].transform.position = new Vector3(-roof.length / 2, baoShaFlyingRafterY, flyingRafterZ - roof.width - roof.baoShaWidth / 2);
         flyingRafters[7].transform.Rotate(new Vector3(0, 45, 0));
 
-        flyingRafters[8].transform.position = new Vector3(-flyingRafterZ + roof.width + roof.baoShaWidth / 2, flyingRafterY, -roof.length / 2);
+        flyingRafters[8].transform.position = new Vector3(-flyingRafterZ + roof.width + roof.baoShaWidth / 2, baoShaFlyingRafterY, -roof.length / 2);
         flyingRafters[8].transform.Rotate(new Vector3(0, 225, 0));
-        flyingRafters[9].transform.position = new Vector3(flyingRafterZ + roof.width + roof.baoShaWidth / 2, flyingRafterY, -roof.length / 2);
+        flyingRafters[9].transform.position = new Vector3(flyingRafterZ + roof.width + roof.baoShaWidth / 2, baoShaFlyingRafterY, -roof.length / 2);
         flyingRafters[9].transform.Rotate(new Vector3(0, 315, 0));
-        flyingRafters[10].transform.position = new Vector3(flyingRafterZ + roof.width + roof.baoShaWidth / 2, flyingRafterY, roof.length / 2);
+        flyingRafters[10].transform.position = new Vector3(flyingRafterZ + roof.width + roof.baoShaWidth / 2, baoShaFlyingRafterY, roof.length / 2);
         flyingRafters[10].transform.Rotate(new Vector3(0, 45, 0));
-        flyingRafters[11].transform.position = new Vector3(-flyingRafterZ + roof.width + roof.baoShaWidth / 2, flyingRafterY, roof.length / 2);
+        flyingRafters[11].transform.position = new Vector3(-flyingRafterZ + roof.width + roof.baoShaWidth / 2, baoShaFlyingRafterY, roof.length / 2);
         flyingRafters[11].transform.Rotate(new Vector3(0, 135, 0));
 
-        flyingRafters[12].transform.position = new Vector3(-roof.length / 2, flyingRafterY, -flyingRafterZ + roof.width + roof.baoShaWidth / 2);
+        flyingRafters[12].transform.position = new Vector3(-roof.length / 2, baoShaFlyingRafterY, -flyingRafterZ + roof.width + roof.baoShaWidth / 2);
         flyingRafters[12].transform.Rotate(new Vector3(0, 315, 0));
-        flyingRafters[13].transform.position = new Vector3(-roof.length / 2, flyingRafterY, flyingRafterZ + roof.width + roof.baoShaWidth / 2);
+        flyingRafters[13].transform.position = new Vector3(-roof.length / 2, baoShaFlyingRafterY, flyingRafterZ + roof.width + roof.baoShaWidth / 2);
         flyingRafters[13].transform.Rotate(new Vector3(0, 45, 0));
-        flyingRafters[14].transform.position = new Vector3(roof.length / 2, flyingRafterY, flyingRafterZ + roof.width + roof.baoShaWidth / 2);
+        flyingRafters[14].transform.position = new Vector3(roof.length / 2, baoShaFlyingRafterY, flyingRafterZ + roof.width + roof.baoShaWidth / 2);
         flyingRafters[14].transform.Rotate(new Vector3(0, 135, 0));
-        flyingRafters[15].transform.position = new Vector3(roof.length / 2, flyingRafterY, -flyingRafterZ + roof.width + roof.baoShaWidth / 2);
+        flyingRafters[15].transform.position = new Vector3(roof.length / 2, baoShaFlyingRafterY, -flyingRafterZ + roof.width + roof.baoShaWidth / 2);
         flyingRafters[15].transform.Rotate(new Vector3(0, 225, 0));
 
-        flyingRafters[16].transform.position = new Vector3(flyingRafterZ - roof.width - roof.baoShaWidth / 2, flyingRafterY, roof.length / 2);
+        flyingRafters[16].transform.position = new Vector3(flyingRafterZ - roof.width - roof.baoShaWidth / 2, baoShaFlyingRafterY, roof.length / 2);
         flyingRafters[16].transform.Rotate(new Vector3(0, 45, 0));
-        flyingRafters[17].transform.position = new Vector3(-flyingRafterZ - roof.width - roof.baoShaWidth / 2, flyingRafterY, roof.length / 2);
+        flyingRafters[17].transform.position = new Vector3(-flyingRafterZ - roof.width - roof.baoShaWidth / 2, baoShaFlyingRafterY, roof.length / 2);
         flyingRafters[17].transform.Rotate(new Vector3(0, 135, 0));
-        flyingRafters[18].transform.position = new Vector3(-flyingRafterZ - roof.width - roof.baoShaWidth / 2, flyingRafterY, -roof.length / 2);
+        flyingRafters[18].transform.position = new Vector3(-flyingRafterZ - roof.width - roof.baoShaWidth / 2, baoShaFlyingRafterY, -roof.length / 2);
         flyingRafters[18].transform.Rotate(new Vector3(0, 225, 0));
-        flyingRafters[19].transform.position = new Vector3(flyingRafterZ - roof.width - roof.baoShaWidth / 2, flyingRafterY, -roof.length / 2);
+        flyingRafters[19].transform.position = new Vector3(flyingRafterZ - roof.width - roof.baoShaWidth / 2, baoShaFlyingRafterY, -roof.length / 2);
         flyingRafters[19].transform.Rotate(new Vector3(0, 315, 0));
 
         foreach (GameObject obj in flyingRafters)
@@ -3661,14 +3678,98 @@ public class ChinesePavilionCreator : MonoBehaviour
             obj.name = "baoSha";
             obj.transform.parent = baoShaObjects.transform;
         }
-        baoShas[0].transform.position = new Vector3(0, roof.baoShaHeight - roof.sideEaveHeight - 1.5f - 2.5f, -roof.width - roof.baoShaWidth / 2);
+        float baoShaFlyingRafterY = -2.5f;
+        baoShas[0].transform.position = new Vector3(0, baoShaFlyingRafterY, -roof.width - roof.baoShaWidth / 2);
         baoShas[0].transform.Rotate(new Vector3(0, 0, 0));
-        baoShas[1].transform.position = new Vector3(roof.width + roof.baoShaWidth / 2, roof.baoShaHeight - roof.sideEaveHeight - 1.5f - 2.5f, 0);
+        baoShas[1].transform.position = new Vector3(roof.width + roof.baoShaWidth / 2, baoShaFlyingRafterY, 0);
         baoShas[1].transform.Rotate(new Vector3(0, 90, 0));
-        baoShas[2].transform.position = new Vector3(0, roof.baoShaHeight - roof.sideEaveHeight - 1.5f - 2.5f, roof.width + roof.baoShaWidth / 2);
+        baoShas[2].transform.position = new Vector3(0, baoShaFlyingRafterY, roof.width + roof.baoShaWidth / 2);
         baoShas[2].transform.Rotate(new Vector3(0, 180, 0));
-        baoShas[3].transform.position = new Vector3(-roof.width - roof.baoShaWidth / 2, roof.baoShaHeight - roof.sideEaveHeight - 1.5f - 2.5f, 0);
+        baoShas[3].transform.position = new Vector3(-roof.width - roof.baoShaWidth / 2, baoShaFlyingRafterY, 0);
         baoShas[3].transform.Rotate(new Vector3(0, 270, 0));
+        #endregion
+
+        #region 中央
+        GameObject centerObjects = new GameObject("CenterRoofs");
+        centerObjects.transform.parent = roofObject.transform;
+        flyingRafterY = -(roof.height - roof.topLowerHeight) + roof.sideEaveHeight;
+        offset = new Vector3(0, flyingRafterY, flyingRafterZ);
+        for (int i = 0; i < flyingRafterPoints.Count; i++)
+        {
+            newFlyingRafterPoints.Add(rotateEuler * flyingRafterPoints[i] + offset);
+        }
+        if (roof.width > roof.sideEaveStart)
+        {
+            List<Vector3> sideRoofPoints = new List<Vector3>();
+            List<Vector3> fakeBargeboardPoints = new List<Vector3>();
+            List<Vector3> sideFlyingRafterPoints = new List<Vector3>();
+
+            offset = new Vector3(0, flyingRafterY, flyingRafterZ);
+            for (int i = 0; i < flyingRafterPoints.Count; i++)
+            {
+                sideFlyingRafterPoints.Add(rotateEuler * flyingRafterPoints[i] + offset);
+            }
+
+            if (flyingRafterPoints.Count > 0)
+                cutNum = Mathf.CeilToInt((roof.deep / 2 + newFlyingRafterPoints[0].z) * 3);
+            else
+                cutNum = 0;
+
+            for (int i = 0; i <= cutNum; i++)
+            {
+                Vector3 pointA = newFlyingRafterPoints[0];
+                pointA.x = -(newFlyingRafterPoints[0].z + roof.deep / 2);
+                Vector3 pointB = new Vector3(-pointA.x, newFlyingRafterPoints[0].y, newFlyingRafterPoints[0].z);
+
+                Vector3 newPoint = (pointA * (cutNum - i) / cutNum) + (pointB * i / cutNum);
+                sideRoofPoints.Add(newPoint);
+            }
+
+            for (int i = bargeboardPoints.Count - flyingBargePointNum - 1; i < bargeboardPoints.Count; i++)
+            {
+                fakeBargeboardPoints.Add(bargeboardPoints[i]);
+            }
+
+            GameObject sideRoof = creator.CreateRoofEaves(sideFlyingRafterPoints, fakeBargeboardPoints, sideRoofPoints, roof.deep + newFlyingRafterPoints[0].z * 2, roof, false);
+            GameObject sideRoofInside = creator.CreateRoofEaves(sideFlyingRafterPoints, fakeBargeboardPoints, sideRoofPoints, roof.deep + newFlyingRafterPoints[0].z * 2, roof, true);
+
+            List<GameObject> centerRoofs = new List<GameObject>
+            {
+                sideRoof,
+                Instantiate(sideRoof),
+                Instantiate(sideRoof),
+                Instantiate(sideRoof),
+                sideRoofInside,
+                Instantiate(sideRoofInside),
+                Instantiate(sideRoofInside),
+                Instantiate(sideRoofInside)
+            };
+            foreach (GameObject obj in centerRoofs)
+            {
+                obj.name = "sideroof";
+                obj.transform.parent = centerObjects.transform;
+            }
+            
+            centerRoofs[0].transform.position = new Vector3(0, 0, -newFlyingRafterPoints[0].z);
+            centerRoofs[0].transform.Rotate(new Vector3(0, 0, 0));
+            centerRoofs[1].transform.position = new Vector3(newFlyingRafterPoints[0].z, 0, 0);
+            centerRoofs[1].transform.Rotate(new Vector3(0, 90, 0));
+            centerRoofs[2].transform.position = new Vector3(0, 0, newFlyingRafterPoints[0].z);
+            centerRoofs[2].transform.Rotate(new Vector3(0, 180, 0));
+            centerRoofs[3].transform.position = new Vector3(-newFlyingRafterPoints[0].z, 0, 0);
+            centerRoofs[3].transform.Rotate(new Vector3(0, 270, 0));
+            centerRoofs[4].transform.position = new Vector3(0, -0.25f, -newFlyingRafterPoints[0].z);
+            centerRoofs[4].transform.Rotate(new Vector3(0, 0, 0));
+            centerRoofs[5].transform.position = new Vector3(newFlyingRafterPoints[0].z, -0.25f, 0);
+            centerRoofs[5].transform.Rotate(new Vector3(0, 90, 0));
+            centerRoofs[6].transform.position = new Vector3(0, -0.25f, newFlyingRafterPoints[0].z);
+            centerRoofs[6].transform.Rotate(new Vector3(0, 180, 0));
+            centerRoofs[7].transform.position = new Vector3(-newFlyingRafterPoints[0].z, -0.25f, 0);
+            centerRoofs[7].transform.Rotate(new Vector3(0, 270, 0));
+            centerRoofs[4].name = centerRoofs[5].name = centerRoofs[6].name = centerRoofs[7].name = "sideRoofInside";
+
+            centerObjects.transform.position = new Vector3(0, body.secondFloorHeight, 0);
+        }
         #endregion
     }
 

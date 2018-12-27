@@ -147,7 +147,10 @@
      <Compile Include="Assets\Scripts\DebugHandler.cs" />
      <Compile Include="Assets\Scripts\MeshCreater\CatmulRomLine.cs" />
      <Compile Include="Assets\Scripts\MeshCreater\CircleCurve.cs" />
+     <Compile Include="Assets\Scripts\MeshCreater\MeshCut.cs" />
      <Compile Include="Assets\Scripts\MeshCreater\MeshCylinder.cs" />
+     <Compile Include="Assets\Scripts\MeshCreater\MeshMaker.cs" />
+     <Compile Include="Assets\Scripts\MeshCreater\MeshPlatform.cs" />
      <Compile Include="Assets\Scripts\MeshCreater\MeshRafter.cs" />
      <Compile Include="Assets\Scripts\MeshCreater\MeshRoof.cs" />
      <Compile Include="Assets\Scripts\UI\SliderManager.cs" />

@@ -293,6 +293,7 @@ public class SliderManager : MonoBehaviour
     {
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 0;
+        height.maxValue = 10;
         disBetween.transform.parent.gameObject.SetActive(false);
         length.transform.parent.gameObject.SetActive(true);
         deep.transform.parent.gameObject.SetActive(true);
@@ -312,6 +313,7 @@ public class SliderManager : MonoBehaviour
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 1;
         roof.length = 0;
+        height.maxValue = 10;
         disBetween.transform.parent.gameObject.SetActive(true);
         length.transform.parent.gameObject.SetActive(false);
         deep.transform.parent.gameObject.SetActive(false);
@@ -331,6 +333,7 @@ public class SliderManager : MonoBehaviour
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 2;
         roof.length = 0;
+        height.maxValue = 10;
         disBetween.transform.parent.gameObject.SetActive(true);
         length.transform.parent.gameObject.SetActive(false);
         deep.transform.parent.gameObject.SetActive(false);
@@ -350,6 +353,7 @@ public class SliderManager : MonoBehaviour
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 3;
         roof.length = 0;
+        height.maxValue = 10;
         disBetween.transform.parent.gameObject.SetActive(true);
         length.transform.parent.gameObject.SetActive(false);
         deep.transform.parent.gameObject.SetActive(false);
@@ -369,6 +373,9 @@ public class SliderManager : MonoBehaviour
         Roof roof = chBuildManager.GetCurrentRoof();
         roof.combineType = 4;
         roof.length = length.value;
+        height.maxValue = 5;
+        if(height.value > 5)
+            height.value = 5;
         disBetween.transform.parent.gameObject.SetActive(false);
         length.transform.parent.gameObject.SetActive(true);
         deep.transform.parent.gameObject.SetActive(false);
